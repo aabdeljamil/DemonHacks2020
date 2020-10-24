@@ -1,8 +1,9 @@
 import discord
+from discord.ext import commands
 import asyncio
 import time
 
-TOKEN = ""
+TOKEN = "" #delete when pushing
 GUILD = "OreoShunment's Demonhack Server"
 
 client = discord.Client()
@@ -20,17 +21,18 @@ async def on_message(message):
 		if message.author in kickList:
 			if kickList[message.author] >= 2:
 				msg = str(message.author) + " has been kicked from this server for spamming."
-				await message.channel.send(msg)
+				await message.channel.send(msg, delete_after = 10.0)
 				#await message.author.kick()
 				kickList.pop(message.author)
 			else:
 				kickList[message.author] = kickList[message.author] + 1
 				msg = str(message.author) + ", don't spam! This is your " + ("first" if kickList[message.author] == 1 else "second") + " warning."
-				await message.channel.send(msg)
+				await message.channel.send(msg, delete_after = 10.0)
 		else:
 			kickList[message.author] = 1
 			msg = str(message.author) + ", don't spam! This is your first warning."
-			await message.channel.send(msg)
+			await message.channel.send(msg, delete_after = 10.0)
+		await message.delete()
 	else:
 		lastMsg[message.author] = message.content.lower()
         
@@ -39,17 +41,18 @@ async def on_message(message):
 			if message.author in kickList:
 				if kickList[message.author] >= 2:
 					msg = str(message.author) + ' has been kicked from this server for cussing too many times.'
-					await message.channel.send(msg)
+					await message.channel.send(msg, delete_after = 10.0)
 					#await message.author.kick()
 					kickList.pop(message.author) #if user is added back, their chance gets reset
 				else:
 					kickList[message.author] = kickList[message.author] + 1
 					msg = str(message.author) + ", don't cuss! This is your " + ("first" if kickList[message.author] == 1 else "second") + " warning."
-					await message.channel.send(msg)
+					await message.channel.send(msg, delete_after = 10.0)
 			else:
 				kickList[message.author] = 1
 				msg = str(message.author) + ", don't cuss! This is your first warning."
-				await message.channel.send(msg)
+				await message.channel.send(msg, delete_after = 10.0)
+		await message.delete()
 
 @client.event
 async def on_ready():
