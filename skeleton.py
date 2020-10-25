@@ -14,19 +14,7 @@ async def on_ready():
 @client.event
 async def on_message(message):
     
-    '''
-    if any(role.name.lower() == 'staff' for role in message.author.roles):
-        if message.content.lower().startswith('a'):
-            channel = message.channel
-            await channel.send ("Send us your First and Last name for attendance!")
-            
-            def check(m):
-                return m.content == 'hello' and m.channel == channel
-            
-            msg = await client.wait_for('message', check=check)
-            await channel.send('Hello{.author}!'.format(msg))
-    '''
-    if message.content.lower() == 'test':
+    if message.content.lower() == '!checkpoints':
         #First find length of students in list
         #assume that this list of students is called students_list
         student_list = ['Mutasim', 'Abdallah', 'Ibrahim', 'Bob', 'Steve', 'Rodgers']
