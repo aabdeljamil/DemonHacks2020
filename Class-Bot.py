@@ -29,7 +29,7 @@ mutelist = {}
 classlist = []
 
 DAYINSECONDS = 86400.0
-WAITTIME = 5.0 # SET TO DAYINSECONDS FOR PROPER BEHAVIOR OF REMINDING EVERY DAY
+WAITTIME = DAYINSECONDS # SET TO DAYINSECONDS FOR PROPER BEHAVIOR OF REMINDING EVERY DAY
 
 async def assignment(numDays, channel, assignmentText):
 	if numDays <= 0.0:
@@ -134,16 +134,16 @@ async def on_message(message):
 	possCommand = (message.content.lower()).split(None, 1)
 	
 	if possCommand[0] == (prefix + "help"): # command is !help
-		await message.channel.send("!lecture ('on'/'off'): *staff* begins a lecture perion, mutes all *student* users\n\
-!assign <number of days> <assignment name>: *staff* creates an assignment due in a given number of days that automatically creates reminders in the given text channel until due\n\
-!hand ('raise'/'lower'): *student* can raise their hand, allowing them to talk *during lecture period* while their hand is raised\n\
-!checkin: *student* checks in for attendance *during lecture period*\n\
-!attendance: *staff* gets a direct message with the attendance record of the *most recent lecture period*\n\
-!poll: prompts user for a question and up to 4 possible answers, then hosts a public poll\n\
-!group ('create'/'start'/'delete') <number of students per group>\n\
-\t\t'create' creates a number of randomly assigned groups, specified by the argument for the max number of students per group\n\
-\t\t'start' moves students to their designated group channels. It takes no other arguments\n\
-\t\t'end' removes all group channels. It takes no other arguments\n")
+		await message.channel.send("**!lecture ('on'/'off')**: *staff* begins a lecture perion, mutes all *student* users\n\n\
+**!assign <number of days> <assignment name>**: *staff* creates an assignment due in a given number of days that automatically creates reminders in the given text channel until due\n\n\
+**!hand ('raise'/'lower')**: *student* can raise their hand, allowing them to talk *during lecture period* while their hand is raised\n\n\
+**!checkin**: *student* checks in for attendance *during lecture period*\n\n\
+**!attendance**: *staff* gets a direct message with the attendance record of the *most recent lecture period*\n\n\
+**!poll**: prompts user for a question and up to 4 possible answers, then hosts a public poll\n\n\
+**!group ('create'/'start'/'delete') <number of students per group>**:\n\n\
+\t\t'*create*' creates a number of randomly assigned groups, specified by the argument for the max number of students per group\n\n\
+\t\t'*start*' moves students to their designated group channels. It takes no other arguments\n\n\
+\t\t'*end*' removes all group channels. It takes no other arguments\n")
 		return
 
 	if possCommand[0] == (prefix + "lecture"): # command is !lecture
@@ -161,15 +161,15 @@ async def on_message(message):
 				global mutelist
 				mutelist = {}
 				isLecture = True
-				await MuteAll(True)
 				await message.channel.send("Lecture is now in session", delete_after = 10.0)
+				await MuteAll(True)
 			else:
 				await message.channel.send("Lecture is already active", delete_after = 10.0)
 		elif possCommand[1] == "off":
 			if isLecture:
 				isLecture = False
-				await MuteAll(False)
 				await message.channel.send("Lecture has concluded", delete_after = 10.0)
+				await MuteAll(False)
 			else:
 				await message.channel.send("Lecture is already inactive", delete_after = 10.0)
 		else:
@@ -248,22 +248,22 @@ async def on_message(message):
 			for i in range(len(listMbrsInVoiceChnl)-1):
 				if listMbrsInVoiceChnl[i] == message.author:
 					del listMbrsInVoiceChnl[i]
-				if any(role.name.lower() == 'staff' for role in listMbrsInVoiceChnl[i].roles):
+				if any(role6.name.lower() == 'staff' for role6 in listMbrsInVoiceChnl[i].roles):
 					del listMbrsInVoiceChnl[i]
 
 			numStudentsInVoiceChnl = len(listMbrsInVoiceChnl)
 
-			msgList = message.content.split()
-			if len(msgList) != 3:
+			msgList6 = message.content.split()
+			if len(msgList6) != 3:
 				await message.channel.send("Invalid usage!\nProper usage: '!group create <n>', where <n> is the max number of students that should be in a breakout group")
 				return
-			maxNumOfStudentsInGroup = int(msgList[2])
+			maxNumOfStudentsInGroup = int(msgList6[2])
 
 			if maxNumOfStudentsInGroup < 1:
 				await message.channel.send('Must be a positive non-zero number')
 				return
 			
-			if int(msgList[2]) > numStudentsInVoiceChnl:
+			if int(msgList6[2]) > numStudentsInVoiceChnl:
 				await message.channel.send('Number of students per group cannot be larger than total number of students')
 				return
 
@@ -275,32 +275,32 @@ async def on_message(message):
 				group = 'Group'
 				chnlName = group + str(i)
 				roleName1 = group + str(i)
-				ROLE = await currentGuild.create_role(name=roleName1)
+				ROLE6 = await currentGuild.create_role(name=roleName1)
 				TXTCHNL = await currentGuild.create_text_channel(chnlName)
 				VOICECHNL = await currentGuild.create_voice_channel(chnlName)
-				groupRoles.append(ROLE)
+				groupRoles.append(ROLE6)
 				groupTCs.append(TXTCHNL)
 				groupVCs.append(VOICECHNL)
 
 				
 				for _ in range(maxNumOfStudentsInGroup):
 					rand = random.randint(0, numStudentsInVoiceChnl-1)
-					await listMbrsInVoiceChnl[rand].add_roles(ROLE)
+					await listMbrsInVoiceChnl[rand].add_roles(ROLE6)
 					del listMbrsInVoiceChnl[rand]
 					numStudentsInVoiceChnl -= 1
 
 
-				await TXTCHNL.set_permissions(ROLE, read_messages=True, send_messages=True)
+				await TXTCHNL.set_permissions(ROLE6, read_messages=True, send_messages=True)
 				await TXTCHNL.set_permissions(every1Role, read_messages=False, send_messages=False)
 
-				await VOICECHNL.set_permissions(ROLE, connect=True)
+				await VOICECHNL.set_permissions(ROLE6, connect=True)
 				await VOICECHNL.set_permissions(every1Role, connect=False)
 
 			if remainder != 0:
-				k = 0
+				k6 = 0
 				for member in listMbrsInVoiceChnl:
-					await member.add_roles(groupRoles[k])
-					k += 1
+					await member.add_roles(groupRoles[k6])
+					k6 += 1
 			
 			groupCreated = True
 
@@ -325,7 +325,7 @@ async def on_message(message):
 		return
 
 	elif message.content.lower() == prefix + 'group start':
-		l = 0
+		l6 = 0
 		targetVoiceChnl = message.author.voice.channel
 		saveChnl = targetVoiceChnl
 		listMbrsInVoiceChnl = targetVoiceChnl.members
@@ -338,10 +338,10 @@ async def on_message(message):
 		if groupCreated:
 			for groupVC in groupVCs:
 				for mem in listMbrsInVoiceChnl:
-					grpName = 'group' + str(l)
-					if any(role.name.lower() == grpName for role in mem.roles):
+					grpName = 'group' + str(l6)
+					if any(role7.name.lower() == grpName for role7 in mem.roles):
 						await mem.move_to(groupVC)
-				l += 1
+				l6 += 1
 		else:
 			await message.channel.send('Groups never created\nRun "!group create <n>"')
 
@@ -371,7 +371,7 @@ async def on_message(message):
 
 	elif message.content.lower() == prefix + 'poll':
 		answers = []
-		x = 4
+		x6 = 4
 		lstIndex = 0
 		t_end = time.time() + 60
 		await message.channel.send('Enter question')
@@ -380,9 +380,9 @@ async def on_message(message):
 		except asyncio.TimeoutError:
 			await message.channel.send('No response, poll cancelled')
 		question = msg1.content
-		while x > 0:
-			msg = 'Enter option ' + answerOptions[lstIndex] + ", or enter 'end' to cancel poll"
-			await message.channel.send(msg)
+		while x6 > 0:
+			msg6 = 'Enter option ' + answerOptions[lstIndex] + ", or enter 'end' to cancel poll"
+			await message.channel.send(msg6)
 			try:
 				msg2 = await client.wait_for('message', timeout=30.0)
 				if msg2.content == 'end':
@@ -390,7 +390,7 @@ async def on_message(message):
 					return
 				answers.append(msg2.content)
 				lstIndex += 1
-				x -= 1
+				x6 -= 1
 			except asyncio.TimeoutError:
 				await message.channel.send('No response, poll cancelled')
 				return
@@ -413,8 +413,8 @@ async def on_message(message):
 	
 	if any(role.name.lower() == "student" for role in message.author.roles) or len(message.author.roles) == 1:
 		if message.author in lastMsg and message.content.lower() == lastMsg[message.author]: # Spam filter
-			msg = str(message.author) + ", don't spam!"
-			await message.channel.send(msg, delete_after = 10.0)
+			msg7 = str(message.author) + ", don't spam!"
+			await message.channel.send(msg7, delete_after = 10.0)
 			await message.delete()
 			return
 		else:
@@ -423,18 +423,18 @@ async def on_message(message):
 		if any(re.search(r"\b" + re.escape(variant) + r"\b", message.content.lower()) for variant in cussVariants): # Test for swearing
 			if message.author in kickList:
 				if kickList[message.author] >= 2:
-					msg = str(message.author) + ' has been muted for cussing too many times.'
-					await message.channel.send(msg)
+					msg8 = str(message.author) + ' has been muted for cussing too many times.'
+					await message.channel.send(msg8)
 					await TextMute(message.author)
 					kickList.pop(message.author) # if user is added back, their chance gets reset
 				else:
 					kickList[message.author] = kickList[message.author] + 1
-					msg = str(message.author) + ", don't cuss! This is your " + ("first" if kickList[message.author] == 1 else "second") + " warning."
-					await message.channel.send(msg, delete_after = 10.0)
+					msg9 = str(message.author) + ", don't cuss! This is your " + ("first" if kickList[message.author] == 1 else "second") + " warning."
+					await message.channel.send(msg9, delete_after = 10.0)
 			else:
 				kickList[message.author] = 1
-				msg = str(message.author) + ", don't cuss! This is your first warning."
-				await message.channel.send(msg, delete_after = 10.0)
+				msg5 = str(message.author) + ", don't cuss! This is your first warning."
+				await message.channel.send(msg5, delete_after = 10.0)
 			await message.delete()
 			return
 			
