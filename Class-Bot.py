@@ -120,6 +120,8 @@ async def on_message(message):
 		global isLecture
 		if possCommand[1] == "on":
 			if not isLecture:
+				classlist = []
+				mutelist = {}
 				isLecture = True
 				await MuteAll(True)
 				await message.channel.send("Lecture is now in session", delete_after = 10.0)
@@ -174,32 +176,32 @@ async def on_message(message):
 		return
 		
 	if possCommand[0] == (prefix + "checkin"):
-        if any(role.name.lower() == 'student' for role in message.author.roles):
-            if isLecture:
-                if message.author not in classlist:
-                    classlist.append(message.author.nick)
-                    await message.channel.send("Checked in.", delete_after=10.0)
-                else:
-                    await message.channel.send("Already checked in", delete_after=10.0)
-            else:
-                await message.channel.send("Lecture has not started.")
-        else:
-            await message.channel.send("!checkin is for students only.")
-        return
+		if any(role.name.lower() == 'student' for role in message.author.roles):
+			if isLecture:
+				if message.author.nick not in classlist:
+					classlist.append(message.author.nick)
+					await message.channel.send("Checked in.", delete_after=10.0)
+				else:
+					await message.channel.send("Already checked in", delete_after=10.0)
+			else:
+				await message.channel.send("Lecture has not started.")
+		else:
+			await message.channel.send("!checkin is for students only.")
+		return
 
-    if possCommand[0] == (prefix + "attendance"):
-        if any(role.name.lower() == 'staff' for role in message.author.roles):
-            if not isLecture:
-                attendancelist = ""
-                for student in classlist:
-                    print(student)
-                    attendancelist = attendancelist + student + "\n"
-                await message.channel.send(attendancelist + "End of list.")
-            else:
-                await message.channel.send("Lecture has not ended.")
-        else:
-            await message.channel.send("!attendance is for instructors only.")
-        return
+	if possCommand[0] == (prefix + "attendance"):
+		if any(role.name.lower() == 'staff' for role in message.author.roles):
+			if not isLecture:
+				attendancelist = ""
+				for student in classlist:
+					print(student)
+					attendancelist = attendancelist + student + "\n"
+				await message.channel.send(attendancelist + "End of list.")
+			else:
+				await message.channel.send("Lecture has not ended.")
+		else:
+			await message.channel.send("!attendance is for instructors only.")
+		return
 	
 	if any(role.name.lower() == "student" for role in message.author.roles) or len(message.author.roles) == 1:
 		if message.author in lastMsg and message.content.lower() == lastMsg[message.author]: # Spam filter
