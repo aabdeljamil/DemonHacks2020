@@ -5,7 +5,7 @@ import time
 import re
 import random
 
-TOKEN = "NzY5Mzg0MDg1MTM4ODMzNDM5.X5OOxA.qdPCzJQBdrGpUJxB2GE75XypAu0" #delete when pushing
+TOKEN = "" #delete when pushing
 GUILD = "OreoShunment's Demonhack Server"
 
 
@@ -135,15 +135,15 @@ async def on_message(message):
 	
 	if possCommand[0] == (prefix + "help"): # command is !help
 		await message.channel.send("!lecture ('on'/'off'): *staff* begins a lecture perion, mutes all *student* users\n\
-		!assign <number of days> <assignment name>: *staff* creates an assignment due in a given number of days that automatically creates reminders in the given text channel until due\n\
-		!hand ('raise'/'lower'): *student* can raise their hand, allowing them to talk *during lecture period* while their hand is raised\n\
-		!checkin: *student* checks in for attendance *during lecture period*\n\
-		!attendance: *staff* gets a direct message with the attendance record of the *most recent lecture period*\n\
-		!poll: prompts user for a question and up to 4 possible answers, then hosts a public poll\
-		!group ('create'/'start'/'delete') <number of students per group>\n\
-		\t\t'create' creates a number of randomly assigned groups, specified by the argument for the max number of students per group\n\
-		\t\t'start' moves students to their designated group channels. It takes no other arguments\n\
-		\t\t'delete' removes all group channels. It takes no other arguments\n")
+!assign <number of days> <assignment name>: *staff* creates an assignment due in a given number of days that automatically creates reminders in the given text channel until due\n\
+!hand ('raise'/'lower'): *student* can raise their hand, allowing them to talk *during lecture period* while their hand is raised\n\
+!checkin: *student* checks in for attendance *during lecture period*\n\
+!attendance: *staff* gets a direct message with the attendance record of the *most recent lecture period*\n\
+!poll: prompts user for a question and up to 4 possible answers, then hosts a public poll\n\
+!group ('create'/'start'/'delete') <number of students per group>\n\
+\t\t'create' creates a number of randomly assigned groups, specified by the argument for the max number of students per group\n\
+\t\t'start' moves students to their designated group channels. It takes no other arguments\n\
+\t\t'delete' removes all group channels. It takes no other arguments\n")
 		return
 
 	if possCommand[0] == (prefix + "lecture"): # command is !lecture
