@@ -198,9 +198,8 @@ async def on_message(message):
 			if not isLecture:
 				attendancelist = ""
 				for student in classlist:
-					print(student)
 					attendancelist = attendancelist + student + "\n"
-				await message.channel.send(attendancelist + "End of list.")
+				await message.author.send(attendancelist + "End of list.")
 			else:
 				await message.channel.send("Lecture has not ended.")
 		else:

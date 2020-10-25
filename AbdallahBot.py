@@ -3,18 +3,20 @@ import asyncio
 import time
 import random
 
-TOKEN = 'NzY5Mzg0MDg1MTM4ODMzNDM5.X5OOxA.LLmbm4wQQ88JO-6eZmAejyZM2lM' #delete before pushing
+TOKEN = 'NzY5Mzg0MDg1MTM4ODMzNDM5.X5OOxA.jnkPHstL1qI_NYdGqYnxlxj1d-s' #delete before pushing
 GUILD = "OreoShunment's Demonhack Server"
 
 client = discord.Client()
-for guild1 in client.guilds:
-    if guild1.name == GUILD:
-        guild = guild1
-        break
 
+saveChnl = None
+currentGuild = None
 prefix = '!'
 groupCreated = False
 answerOptions = ['A', 'B', 'C', 'D']
+groupRoles = []
+groupVCs = []
+groupTCs = []
+
 
 
 @client.event
@@ -26,8 +28,8 @@ async def on_message(message):
         emoji4 = discord.utils.get(message.author.guild.emojis, name='four')
         return user == message.author and str(reaction.emoji) == emoji1 or emoji2 or emoji3 or emoji4
 
+    global currentGuild
     global groupCreated
-    guild = client.guilds[0]
     if message.author == client.user: #don't want bot replying to itself
         return
     
@@ -38,76 +40,98 @@ async def on_message(message):
             numStudentsInVoiceChnl = len(listMbrsInVoiceChnl)
 
             msgList = message.content.split()
+            if len(msgList) != 3:
+                await message.channel.send("Invalid usage!\nProper usage: '!group create <n>', where <n> is the max number of students that should be in a breakout group")
+                return
             maxNumOfStudentsInGroup = int(msgList[2])
+
             if maxNumOfStudentsInGroup < 1:
                 await message.channel.send('Must be a positive non-zero number')
                 return
+            
+            if int(msgList[2]) > numStudentsInVoiceChnl:
+                await message.channel.send('Number of students per group cannot be larger than total number of students')
+                return
+
             numChnlsToCreate = numStudentsInVoiceChnl // maxNumOfStudentsInGroup
             remainder = numStudentsInVoiceChnl % maxNumOfStudentsInGroup
+            every1Role = discord.utils.get(currentGuild.roles, name='@everyone')
             
-            category = discord.utils.get(guild.categories, name='VOICE CHANNELS')
             for i in range(numChnlsToCreate):
                 group = 'Group'
                 chnlName = group + str(i)
                 roleName1 = group + str(i)
-                ROLE = await guild.create_role(name=roleName1)
-                TXTCHNL = await guild.create_text_channel(chnlName)
-                VOICECHNL = await guild.create_voice_channel(chnlName)
+                ROLE = await currentGuild.create_role(name=roleName1)
+                TXTCHNL = await currentGuild.create_text_channel(chnlName)
+                VOICECHNL = await currentGuild.create_voice_channel(chnlName)
+                groupRoles.append(ROLE)
+                groupTCs.append(TXTCHNL)
+                groupVCs.append(VOICECHNL)
+
+                  
+                for _ in range(maxNumOfStudentsInGroup):
+                    rand = random.randint(0, numStudentsInVoiceChnl-1)
+                    await listMbrsInVoiceChnl[rand].add_roles(ROLE)
+                    del listMbrsInVoiceChnl[rand]
+                    numStudentsInVoiceChnl -= 1
+
+
+                await TXTCHNL.set_permissions(ROLE, read_messages=True, send_messages=True)
+                await TXTCHNL.set_permissions(every1Role, read_messages=False, send_messages=False)
+
+                await VOICECHNL.set_permissions(ROLE, connect=True)
+                await VOICECHNL.set_permissions(every1Role, connect=False)
+
+            if remainder != 0:
+                k = 0
+                for member in listMbrsInVoiceChnl:
+                    await member.add_roles(groupRoles[k])
+                    k += 1
+            
             groupCreated = True
+
         else:
             await message.channel.send('Must be staff member')
 
 
+    elif message.content.lower() == prefix + 'group delete':
+        for groupVC in groupVCs:
+            await groupVC.delete()
+        for groupTC in groupTCs:
+            await groupTC.delete()
+        for groupRole in groupRoles:
+            await groupRole.delete()
+
+
     elif message.content.lower() == prefix + 'group start':
-        newRoles = []
-        for j in range(maxNumOfStudentsInGroup):
-            rand = random.randint(0, numStudentsInVoiceChnl-1)
-            chnl = discord.utils.get(guild.voice_channels, name=chnlName)
-            await listMbrsInVoiceChnl[rand].move_to(chnl)
-            del listMbrsInVoiceChnl[rand]
-            numStudentsInVoiceChnl -= 1
-            '''
-            guildRoles = guild.roles
-            for guildRole in guildRoles:
-                newRoles.append(guildRole)  
-
-            every1 = discord.utils.get(guild.roles, name='@everyone')      
-            targetRole1 = discord.utils.get(guild.roles, name=roleName1)
-            for j in range(maxNumOfStudentsInGroup):
-                rand = random.randint(0, numStudentsInVoiceChnl-1)
-                await listMbrsInVoiceChnl[rand].add_roles(targetRole1)
-                del listMbrsInVoiceChnl[rand]
-                numStudentsInVoiceChnl -= 1
-            
-
-
-            guildTextChnls = guild.text_channels
-            for guildTextChnl in guildTextChnls:
-                if guildTextChnl.name == chnlName:
-                    targetTextChnl = guildTextChnl
-            await targetTextChnl.set_permissions(targetRole, read_messages=True, send_messages=True)
-            await targetTextChnl.set_permissions(every1, read_messages=False, send_messages=False)
-
-
-
-            guildVoiceChnls = guild.voice_channels
-            for guildVoiceChnl in guildVoiceChnls:
-                if guildVoiceChnl.name == chnlName:
-                    targetVoiceChnl = guildVoiceChnl
-            await targetVoiceChnl.set_permissions(targetRole, read_messages=True, send_messages=True)
-            await targetVoiceChnl.set_permissions(every1, read_messages=False, send_messages=False)
-            '''
-        '''
-        k = 0
-        for member in listMbrsInVoiceChnl:
-            await member.add_roles(newRoles[k])
-            k += 1
-        '''
+        l = 0
+        targetVoiceChnl = message.author.voice.channel
+        saveChnl = targetVoiceChnl
+        listMbrsInVoiceChnl = targetVoiceChnl.members
+        if groupCreated:
+            for groupVC in groupVCs:
+                for mem in listMbrsInVoiceChnl:
+                    grpName = 'group' + str(l)
+                    if any(role.name.lower() == grpName for role in mem.roles):
+                        await mem.move_to(groupVC)
+                l += 1
+        else:
+            await message.channel.send('Groups never created')
 
 
     elif message.content.lower() == prefix + 'group end':
-        return
+        for mem in currentGuild.members:
+            if any(role.name.lower().startswith('group') for role in mem.roles):
+                if mem.voice:
+                    await mem.move_to(saveChnl)
 
+        #delete all roles and channels that were created
+        for groupVC in groupVCs:
+            await groupVC.delete()
+        for groupTC in groupTCs:
+            await groupTC.delete()
+        for groupRole in groupRoles:
+            await groupRole.delete()
 
 
     elif message.content.lower() == prefix + 'poll':
@@ -150,12 +174,14 @@ async def on_message(message):
 
         await message.channel.send('Poll ended')
 
+
 @client.event
 async def on_ready():
     for guild1 in client.guilds:
         if guild1.name == GUILD:
-            guild = guild1
+            global currentGuild
+            currentGuild = guild1
             break
-    print(client.user, 'connected to guild ', guild.name, '#', guild.id)
+    print(client.user, 'connected to guild ', currentGuild.name, '#', currentGuild.id)
 
 client.run(TOKEN)
