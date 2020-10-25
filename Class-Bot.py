@@ -3,7 +3,7 @@ from discord.ext import commands
 import asyncio
 import time
 
-TOKEN = "" #delete when pushing
+TOKEN = "NzY5Mzg3MjE5MTUyMjczNDE5.X5ORrw.JKgn445uqbvFhgfiEgp5sujya2Q" #delete when pushing
 GUILD = "OreoShunment's Demonhack Server"
 
 
@@ -120,7 +120,9 @@ async def on_message(message):
 		global isLecture
 		if possCommand[1] == "on":
 			if not isLecture:
+				global classlist
 				classlist = []
+				global mutelist
 				mutelist = {}
 				isLecture = True
 				await MuteAll(True)
