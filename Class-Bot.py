@@ -49,6 +49,7 @@ async def MuteAll(flag): # flag is True to mute, False to unmute
 			else:
 				mutelist.pop(memb)
 				await memb.edit(mute = False)
+
 				
 async def HandleMute(member, flag, channel): # flag is True to mute, False to unmute
 	global currentGuild
@@ -121,7 +122,9 @@ async def on_message(message):
 		global isLecture
 		if possCommand[1] == "on":
 			if not isLecture:
+				global classlist
 				classlist = []
+				global mutelist
 				mutelist = {}
 				isLecture = True
 				await MuteAll(True)
