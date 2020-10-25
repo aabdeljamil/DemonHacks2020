@@ -2,8 +2,9 @@ import discord
 from discord.ext import commands
 import asyncio
 import time
+import re
 
-TOKEN = "" #delete when pushing
+TOKEN = "NzY5Mzg3MTk3NDEyODAyNjAw.X5ORqg.o9o_TZ4Cs8TsRkurYJ7PeRBvkYE" #delete when pushing
 GUILD = "OreoShunment's Demonhack Server"
 
 
@@ -211,8 +212,8 @@ async def on_message(message):
 			return
 		else:
 			lastMsg[message.author] = message.content.lower()
-			
-		if any(variant in message.content.lower() for variant in cussVariants): # Test for swearing
+
+		if any(re.search(r"\b" + re.escape(variant) + r"\b", message.content.lower()) for variant in cussVariants): # Test for swearing
 			if message.author in kickList:
 				if kickList[message.author] >= 2:
 					msg = str(message.author) + ' has been muted for cussing too many times.'
