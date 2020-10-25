@@ -4,7 +4,7 @@ import asyncio
 import time
 import re
 
-TOKEN = "NzY5Mzg3MTk3NDEyODAyNjAw.X5ORqg.o9o_TZ4Cs8TsRkurYJ7PeRBvkYE" #delete when pushing
+TOKEN = "" #delete when pushing
 GUILD = "OreoShunment's Demonhack Server"
 
 
