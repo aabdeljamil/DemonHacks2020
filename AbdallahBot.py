@@ -3,7 +3,7 @@ import asyncio
 import time
 import random
 
-TOKEN = 'NzY5Mzg0MDg1MTM4ODMzNDM5.X5OOxA.jnkPHstL1qI_NYdGqYnxlxj1d-s' #delete before pushing
+TOKEN = 'NzY5Mzg0MDg1MTM4ODMzNDM5.X5OOxA.qdPCzJQBdrGpUJxB2GE75XypAu0' #delete before pushing
 GUILD = "OreoShunment's Demonhack Server"
 
 client = discord.Client()
@@ -30,13 +30,25 @@ async def on_message(message):
 
     global currentGuild
     global groupCreated
+    global saveChnl
+    global groupTCs
+    global groupVCs
+    global groupRoles
+    
     if message.author == client.user: #don't want bot replying to itself
         return
     
     if message.content.lower().startswith(prefix + 'group create'):
         if any(role.name.lower() == 'staff' for role in message.author.roles):#check for 'instructor' role (required)
             targetVoiceChnl = message.author.voice.channel
+            saveChnl = targetVoiceChnl
             listMbrsInVoiceChnl = targetVoiceChnl.members
+            for i in range(len(listMbrsInVoiceChnl)-1):
+                if listMbrsInVoiceChnl[i] == message.author:
+                    del listMbrsInVoiceChnl[i]
+                if any(role.name.lower() == 'staff' for role in listMbrsInVoiceChnl[i].roles):
+                    del listMbrsInVoiceChnl[i]
+
             numStudentsInVoiceChnl = len(listMbrsInVoiceChnl)
 
             msgList = message.content.split()
@@ -102,12 +114,23 @@ async def on_message(message):
         for groupRole in groupRoles:
             await groupRole.delete()
 
+        groupTCs = []
+        groupVCs = []
+        groupRoles = []
+
+        groupCreated = False
 
     elif message.content.lower() == prefix + 'group start':
         l = 0
         targetVoiceChnl = message.author.voice.channel
         saveChnl = targetVoiceChnl
         listMbrsInVoiceChnl = targetVoiceChnl.members
+        for i in range(len(listMbrsInVoiceChnl)-1):
+            if listMbrsInVoiceChnl[i] == message.author:
+                del listMbrsInVoiceChnl[i]
+            if any(role.name.lower() == 'staff' for role in listMbrsInVoiceChnl[i].roles):
+                del listMbrsInVoiceChnl[i]
+
         if groupCreated:
             for groupVC in groupVCs:
                 for mem in listMbrsInVoiceChnl:
@@ -116,7 +139,7 @@ async def on_message(message):
                         await mem.move_to(groupVC)
                 l += 1
         else:
-            await message.channel.send('Groups never created')
+            await message.channel.send('Groups never created\nRun "!group create <n>"')
 
 
     elif message.content.lower() == prefix + 'group end':
@@ -132,6 +155,12 @@ async def on_message(message):
             await groupTC.delete()
         for groupRole in groupRoles:
             await groupRole.delete()
+
+        groupTCs = []
+        groupVCs = []
+        groupRoles = []
+        
+        groupCreated = False
 
 
     elif message.content.lower() == prefix + 'poll':
@@ -175,6 +204,8 @@ async def on_message(message):
         await message.channel.send('Poll ended')
 
 
+    elif message.content.lower() == prefix + 'question':
+        return
 @client.event
 async def on_ready():
     for guild1 in client.guilds:
