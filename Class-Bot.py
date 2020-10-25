@@ -17,7 +17,8 @@ cussVariants = ['fuck', 'shit', 'bitch', 'ass', 'cunt', 'cock', 'dick', 'damn', 
 isLecture = False
 prefix = "!"
 
-classlist = {}
+mutelist = {}
+classlist = []
 
 DAYINSECONDS = 86400.0
 WAITTIME = 5.0 # SET TO DAYINSECONDS FOR PROPER BEHAVIOR OF REMINDING EVERY DAY
@@ -42,10 +43,10 @@ async def MuteAll(flag): # flag is True to mute, False to unmute
 	for memb in currentGuild.members:
 		if any(role.name.lower() == "student" for role in memb.roles) or len(memb.roles) == 1:
 			if flag:
-				classlist[memb] = 0
+				mutelist[memb] = 0
 				await memb.edit(mute = True)
 			else:
-				classlist.pop(memb)
+				mutelist.pop(memb)
 				await memb.edit(mute = False)
 				
 async def HandleMute(member, flag, channel): # flag is True to mute, False to unmute
@@ -53,17 +54,17 @@ async def HandleMute(member, flag, channel): # flag is True to mute, False to un
 	if currentGuild == None:
 		print("Not part of a guild")
 		return
-	if member in classlist.keys():
+	if member in mutelist.keys():
 		if flag:
-			if classlist[member] == 0:
-				classlist[member] = 1
+			if mutelist[member] == 0:
+				mutelist[member] = 1
 				await member.edit(mute = False)
 				await channel.send("User **" + member.nick + " **has raised their hand")
 			else:
 				await channel.send("You already have your hand raised", delete_after = 10.0)
 		else:
-			if classlist[member] == 1:
-				classlist[member] = 0
+			if mutelist[member] == 1:
+				mutelist[member] = 0
 				await member.edit(mute = True)
 				await channel.send("User **" + member.nick + " **has lowered their hand")
 			else:
@@ -165,6 +166,34 @@ async def on_message(message):
 		else:
 			await message.channel.send("Incorrect usage of '!hand'\nproper usage is '!hand (raise/lower)'", delete_after = 20.0)
 		return
+		
+	if possCommand[0] == (prefix + "checkin"):
+        if any(role.name.lower() == 'student' for role in message.author.roles):
+            if isLecture:
+                if message.author not in classlist:
+                    classlist.append(message.author.nick)
+                    await message.channel.send("Checked in.", delete_after=10.0)
+                else:
+                    await message.channel.send("Already checked in", delete_after=10.0)
+            else:
+                await message.channel.send("Lecture has not started.")
+        else:
+            await message.channel.send("!checkin is for students only.")
+        return
+
+    if possCommand[0] == (prefix + "attendance"):
+        if any(role.name.lower() == 'staff' for role in message.author.roles):
+            if not isLecture:
+                attendancelist = ""
+                for student in classlist:
+                    print(student)
+                    attendancelist = attendancelist + student + "\n"
+                await message.channel.send(attendancelist + "End of list.")
+            else:
+                await message.channel.send("Lecture has not ended.")
+        else:
+            await message.channel.send("!attendance is for instructors only.")
+        return
 	
 	if any(role.name.lower() == "student" for role in message.author.roles) or len(message.author.roles) == 1:
 		if message.author in lastMsg and message.content.lower() == lastMsg[message.author]: # Spam filter
@@ -196,4 +225,3 @@ async def on_message(message):
 			
 
 client.run(TOKEN)
-
