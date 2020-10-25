@@ -3,7 +3,7 @@ from discord.ext import commands
 import asyncio
 import time
 
-TOKEN = "NzY5Mzg3MjE5MTUyMjczNDE5.X5ORrw.6wIqJQLmAdo6GV1cX_TA3nXATaA" #delete when pushing
+TOKEN = "" #delete when pushing
 GUILD = "OreoShunment's Demonhack Server"
 
 
