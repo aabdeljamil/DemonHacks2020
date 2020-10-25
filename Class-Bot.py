@@ -134,7 +134,7 @@ async def on_message(message):
 	possCommand = (message.content.lower()).split(None, 1)
 	
 	if possCommand[0] == (prefix + "help"): # command is !help
-		await message.channel.send("!lecture ('on'/'off'): *staff* begins a lecture perion, mutes all *student* users\n\
+		await message.channel.send("!lecture ('on'/'off'): *staff* begins a lecture period, mutes all *student* users\n\
 		!assign <number of days> <assignment name>: *staff* creates an assignment due in a given number of days that automatically creates reminders in the given text channel until due\n\
 		!hand ('raise'/'lower'): *student* can raise their hand, allowing them to talk *during lecture period* while their hand is raised\n\
 		!checkin: *student* checks in for attendance *during lecture period*\n\
