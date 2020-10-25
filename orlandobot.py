@@ -3,7 +3,7 @@ import asyncio
 import time
 import sched
 
-TOKEN = 'NzY5Mzg3MTk3NDEyODAyNjAw.X5ORqg.kFsscKTqsMhC5CejcrnwCVlWLPU'
+TOKEN = 'NzY5Mzg3MTk3NDEyODAyNjAw.X5ORqg.RCdGYZR23G4wMdP3K_ce5ewJFxM'
 GUILD = "OreoShunment's Demonhack Server"
 client = discord.Client()
 classlist = []

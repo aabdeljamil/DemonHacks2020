@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 import asyncio
 import time
+import re
 
 TOKEN = "NzY5Mzg3MjE5MTUyMjczNDE5.X5ORrw.JKgn445uqbvFhgfiEgp5sujya2Q" #delete when pushing
 GUILD = "OreoShunment's Demonhack Server"
@@ -48,6 +49,7 @@ async def MuteAll(flag): # flag is True to mute, False to unmute
 			else:
 				mutelist.pop(memb)
 				await memb.edit(mute = False)
+
 				
 async def HandleMute(member, flag, channel): # flag is True to mute, False to unmute
 	global currentGuild
@@ -213,8 +215,8 @@ async def on_message(message):
 			return
 		else:
 			lastMsg[message.author] = message.content.lower()
-			
-		if any(variant in message.content.lower() for variant in cussVariants): # Test for swearing
+
+		if any(re.search(r"\b" + re.escape(variant) + r"\b", message.content.lower()) for variant in cussVariants): # Test for swearing
 			if message.author in kickList:
 				if kickList[message.author] >= 2:
 					msg = str(message.author) + ' has been muted for cussing too many times.'
