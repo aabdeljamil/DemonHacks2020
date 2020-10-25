@@ -111,7 +111,7 @@ async def on_message(message):
 	possCommand = (message.content.lower()).split(None, 1)
 	
 	if possCommand[0] == (prefix + "lecture"): # command is !lecture
-		if any(role.name.lower() == "student" for role in message.author.roles) or len(message.author.roles) == 1:
+		if not (any(role.name.lower() == "staff" for role in message.author.roles)) or len(message.author.roles) == 1:
 			await message.channel.send("You do not have permission to use the command '!lecture'", delete_after = 10.0)
 			return
 		if len(possCommand) <= 1:
@@ -137,6 +137,9 @@ async def on_message(message):
 		return
 	
 	if possCommand[0] == (prefix + "assign"): # command is !assign
+		if not (any(role.name.lower() == "staff" for role in message.author.roles)) or len(message.author.roles) == 1:
+			await message.channel.send("You do not have permission to use the command '!assign'", delete_after = 10.0)
+			return
 		if len(possCommand) <= 1:
 			await message.channel.send("Incorrect usage of '!assign'\nproper usage is '!assign <number of days> <assignment name>'", delete_after = 20.0)
 			return
@@ -156,15 +159,18 @@ async def on_message(message):
 		return
 		
 	if possCommand[0] == (prefix + "hand"): # command is !hand
-		if len(possCommand) <= 1:
-			await message.channel.send("Incorrect usage of '!hand'\nproper usage is '!hand (raise/lower)'", delete_after = 20.0)
-			return
-		if possCommand[1] == "raise":
-			await HandleMute(message.author, True, message.channel)
-		elif possCommand[1] == "lower":
-			await HandleMute(message.author, False, message.channel)
+		if any(role.name.lower() == "student" for role in message.author.roles) or len(message.author.roles) == 1:
+			if len(possCommand) <= 1:
+				await message.channel.send("Incorrect usage of '!hand'\nproper usage is '!hand (raise/lower)'", delete_after = 20.0)
+				return
+			if possCommand[1] == "raise":
+				await HandleMute(message.author, True, message.channel)
+			elif possCommand[1] == "lower":
+				await HandleMute(message.author, False, message.channel)
+			else:
+				await message.channel.send("Incorrect usage of '!hand'\nproper usage is '!hand (raise/lower)'", delete_after = 20.0)
 		else:
-			await message.channel.send("Incorrect usage of '!hand'\nproper usage is '!hand (raise/lower)'", delete_after = 20.0)
+			await message.channel.send("'!hand' is meant for students only", delete_after = 10.0)
 		return
 		
 	if possCommand[0] == (prefix + "checkin"):
